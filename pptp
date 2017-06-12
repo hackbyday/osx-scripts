@@ -1,0 +1,40 @@
+#!/bin/bash
+#
+# PPTP Script for OSX Sierra
+#
+
+if [[ $# -lt 3 ]]; then
+	echo "Usage: $0 <host> <user> <pass> [defaultroute]"
+	exit 1
+fi
+
+HOST=$1
+USER=$2
+PASS=$3
+LOG="/var/log/pptp.log"
+DEFROUTE=$4
+
+sudo pppd \
+	remoteaddress $HOST \
+	$DEFROUTE \
+	pty "$HOST --nolaunchpppd" \
+	lock \
+	user $USER \
+	password $PASS \
+	ipcp-accept-local ipcp-accept-remote \
+	require-mschap-v2 \
+	mppe-stateless \
+	mppe-128 \
+	noauth \
+	nobsdcomp \
+	nodeflate \
+	nodetach \
+	plugin pptp.ppp \
+	noipdefault \
+	refuse-pap \
+	refuse-eap \
+	refuse-chap \
+	refuse-chap-md5 \
+	refuse-mschap \
+	plugin /System/Library/SystemConfiguration/PPPController.bundle/Contents/PlugIns/PPPDialogs.ppp \
+	logfile $LOG
